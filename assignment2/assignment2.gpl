@@ -1,0 +1,251 @@
+int window_height=400;
+int window_width=500;
+double window_red=0;
+double window_green=0;
+double window_blue=0;
+int animation_speed =80;
+int score =0;
+int ball_radius=30;
+int ball_move=60;
+int xpos=(window_width/2)-ball_radius;
+int ypos=(window_height/2)-ball_radius;
+int reset_pos=30;
+int randx=0;
+int randy=0;
+int randEx=0;
+int randEy=0;
+int randB1x=0;
+int randB1y=0;
+int randB2x=0;
+int randB2y=0;
+textbox rules(text="Use arrow keys to move, Green square +1, Green Circle -1, Red circle 0", red=1, blue=0, green=0, size=.05, y=5);
+forward animation reset(circle cur_ball);
+circle ball(x=(window_width/2)-ball_radius, y=(window_height/2)-ball_radius, radius=ball_radius, animation_block=reset);
+
+circle enemy(radius=5, red=1, green=0, blue=0);
+
+rectangle square(x=window_width/2,y=window_height/2,w=10, h=10,red=0, green=1, blue=0);
+
+circle bad1(radius=5,red=0, green=1, blue=0);
+
+
+circle bad2(radius=5,red=0, green=1, blue=0);
+textbox scoreboard(x=window_width/2, y=300,text=score,size=.3,red=1, green=0, blue=0);
+
+
+animation reset(circle cur_ball)
+{
+  scoreboard.text=score;
+  if(randx>randy)
+  {
+    square.y=window_height/2;
+    if(randx%2==0)
+      square.x=(xpos-ball_move)+ball_radius;
+    else
+      square.x=(xpos+ball_move)+ball_radius;
+  }
+  else if(randx<randy)
+  {
+    square.x=window_width/2;
+    if(randy%2==0)
+    {
+      square.y=ypos-ball_move;
+    }
+    else
+    {
+      square.y=ypos+ball_move;
+    }
+  }
+  else if(randx==randy)
+  {
+    randx=random(10);
+    randy=random(10);
+  }
+  if(randEx>randEy)
+  {
+    enemy.y=window_height/2;
+    if((randEx%2==0&&square.x!=(xpos-ball_move)+ball_radius))
+    {
+      enemy.x=(xpos-ball_move)+ball_radius;
+    }
+    else if(randx!=(xpos+ball_move)+ball_radius)
+    {
+      enemy.x=(xpos+ball_move)+ball_radius;
+    }
+    else
+    {
+      randEx=random(10);
+      randEy=random(10);
+    }
+  }
+  else if(randEx<randEy)
+  {
+    enemy.x=window_width/2;
+    if(randEy%2==0&&square.y!=(ypos-ball_move))
+    {
+      enemy.y=ypos-ball_move;
+    }
+    else if(randy!=ypos+ball_move)
+    {
+      enemy.y=ypos+ball_move;
+    }
+    else
+    {
+      randEx=random(10);
+      randEy=random(10);
+    }
+  }
+  else if(randEx==randEy)
+  {
+    randEy=random(10);
+    randEx=random(10);
+  }
+  if(square.x==enemy.x&&square.y==enemy.y)
+  {
+    randEy=random(10);
+    randEx=random(10);
+  }
+  if(square.x==window_width/2&&enemy.x==window_width/2)
+  {
+    bad1.y=window_height/2;
+    bad1.x=(xpos-ball_move)+ball_radius;
+    bad2.y=window_height/2;
+    bad2.x=(xpos+ball_move)+ball_radius;
+  }
+  else if(square.y==window_height/2&&enemy.y==window_height/2)
+  {
+    bad1.y=ypos+ball_move;
+    bad2.y=ypos-ball_move;
+    bad1.x=window_width/2;
+    bad2.x=window_width/2;
+  }
+  else if((square.x==(xpos-ball_move)+ball_radius&&enemy.y==ypos+ball_move)||(square.y==ypos+ball_move&&enemy.x==(xpos-ball_move)+ball_radius))
+  {
+    bad1.x=(xpos+ball_move)+ball_radius;
+    bad2.y=ypos-ball_move;
+    bad1.y=window_height/2;
+    bad2.x=window_width/2;
+  }
+  else if((square.y==ypos-ball_move&&enemy.x==(xpos-ball_move)+ball_radius)||(square.x==(xpos-ball_move)+ball_radius&&enemy.y==ypos-ball_move))
+  {
+    bad1.x=(xpos+ball_move)+ball_radius;
+    bad1.y=window_height/2;
+    bad2.x=window_width/2;
+    bad2.y=ypos+ball_move;
+  }
+  else if((square.y==ypos-ball_move&&enemy.x==(xpos+ball_move)+ball_radius)||(square.x==(xpos+ball_move)+ball_radius&&enemy.y==ypos-ball_move))
+  {
+    bad1.x=(xpos-ball_move)+ball_radius;
+    bad1.y=window_height/2;
+    bad2.x=window_width/2;
+    bad2.y=ypos+ball_move;
+  }
+  else if((square.x==(xpos+ball_move)+ball_radius&&enemy.y==ypos+ball_move)||(square.y==ypos+ball_move&&enemy.x==(xpos+ball_move)+ball_radius))
+  {
+    bad1.x=(xpos-ball_move)+ball_radius;
+    bad1.y=window_height/2;
+    bad2.x=window_width/2;
+    bad2.y=ypos-ball_move;
+  }
+  if(ball.x<xpos&&ball.x!=xpos)
+  {
+    ball.x+=reset_pos;
+  }
+  else if(ball.x>xpos&&ball.x!=xpos)
+  {
+    ball.x-=reset_pos;
+  }
+  else if(ball.y>ypos&&ball.y!=ypos)
+  {
+    ball.y-=reset_pos;
+  }
+  else if(ball.y<ypos&&ball.y!=ypos)
+  {
+    ball.y+=reset_pos;
+  }
+  if(ball.y==enemy.y&&ball.x==enemy.x)
+  {
+    score=0;
+  }
+}
+on leftarrow
+{
+  if(square.x==(xpos-ball_move)+ball_radius)
+    score+=1;
+  else if(enemy.x==(xpos-ball_move)+ball_radius)
+  {
+    score=0;
+  }
+  else
+  {
+    score-=1;
+  }
+  ball.x-=ball_move;
+  randx=random(10);
+  randy=random(10);
+  print("X:"+randx);
+  print("Y:"+randy);
+  randEx=random(10);
+  randEy=random(10);
+}
+on rightarrow
+{
+  if(square.x==(xpos+ball_move)+ball_radius)
+  {
+    score+=1;
+  }
+  else if(enemy.x==(xpos+ball_move)+ball_radius)
+  {
+    score=0;
+  }
+  else
+  {
+    score-=1;
+  }
+  ball.x+=ball_move;
+  randx=random(10);
+  randy=random(10);
+  randEx=random(10);
+  randEy=random(10);
+}
+on uparrow
+{
+  if(square.y==ypos+ball_move)
+  {
+    score+=1;
+  }
+  else if(enemy.y==ypos+ball_move)
+  {
+    score=0;
+  }
+  else
+  {
+    score-=1;
+  }
+
+  ball.y+=ball_move;
+  randx=random(10);
+  randy=random(10);
+  randEx=random(10);
+  randEy=random(10);
+}
+on downarrow
+{
+  if(square.y==ypos-ball_move)
+  {
+    score+=1;
+  }
+  else if(enemy.y==ypos-ball_move)
+  {
+    score=0;
+  }
+  else
+  {
+    score-=1;
+  }
+  ball.y-=ball_move;
+  randx=random(10);
+  randy=random(10);
+  randEx=random(10);
+  randEy=random(10);
+}
